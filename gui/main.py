@@ -1,19 +1,32 @@
-import tkinter as tk
-from turtle import screensize, window_width
+from tkinter import *
 
-window = tk.Tk()
-window.title("Demo")
+
+root = Tk()
+
+root.title("Main Page")
 
 window_width = 1200
 window_height = 800
 
-screen_width = window.winfo_screenwidth()
-screen_height = window.winfo_screenheight()
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
 center_x = int(screen_width/2 - window_width/2)
 center_y = int(screen_height/2 - window_height/2)
 
-window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
 
-window.mainloop()
+timeLabel = Label(root,text="time placeholder")
+
+#soundTestButton = Button(root,text="Test Volume",command=testVolume)
+#startButton = Button(root,text="Start",command=onClickStart)
+
+customConsole = Listbox(root)
+
+volumeSlider = Scale(root, from_=0, to=100)
+
+
+
+
+root.mainloop()
