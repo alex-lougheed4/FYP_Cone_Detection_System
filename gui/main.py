@@ -42,7 +42,7 @@ def onClickStop():
 def testVolume():
     return
     
-titleLabel = Label(ws,text="Cone Detection System Main Menu")
+titleLabel = Label(ws,text="Main")
 timeLabel = Label(ws,text="time placeholder")
 soundTestButton = Button(ws,text="Test Volume",command=testVolume)
 stopButton = Button(ws,text="Stop",command=onClickEndButton)
@@ -51,9 +51,14 @@ customConsole = Listbox(ws)
 
 volumeSlider = Scale(ws, from_=100, to=0)
 
+canvas = Canvas(ws, width = 400, height = 300)      
+      
+img = PhotoImage(file="placeholder.png")      
+canvas.create_image(20,20, anchor=NW, image=img) 
+
 titleLabel.grid(row=0,column=0)
 timeLabel.grid(row=0,column=1)
-#videoStream.grid(row=1,column=0)
+canvas.grid(row=1,column=0)
 soundTestButton.grid(row=1,column=1)
 volumeSlider.grid(row=1,column=2)
 customConsole.grid(row=2,column=0)
