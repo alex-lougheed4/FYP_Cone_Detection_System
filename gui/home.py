@@ -1,7 +1,10 @@
 from tkinter import *
+import pygame
 
 
 ws = Tk()
+pygame.mixer.init()
+testSound = pygame.mixer.Sound('testSound.mp3')
 
 ws.title("Demo")
 
@@ -37,8 +40,11 @@ def onClickConfirm():
     ws.destroy()
     import main
 
+
 def testVolume():
-    return
+    testSound.set_volume(volumeSlider.get())
+    print(f'volume set to {volumeSlider.get()}')
+    testSound.play()
     
 titleLabel = Label(ws,text="Cone Detection System Main Menu")
 timeLabel = Label(ws,text="time placeholder")
