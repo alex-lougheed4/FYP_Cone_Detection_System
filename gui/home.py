@@ -42,8 +42,9 @@ def onClickConfirm():
 
 
 def testVolume():
-    testSound.set_volume(volumeSlider.get())
-    print(f'volume set to {volumeSlider.get()}')
+    volume = volumeSlider.get()
+    testSound.set_volume(volume)
+    print(f'volume set to {volume}')
     testSound.play()
     
 titleLabel = Label(ws,text="Cone Detection System Main Menu")
