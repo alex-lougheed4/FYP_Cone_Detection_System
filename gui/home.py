@@ -4,7 +4,9 @@ import pygame
 
 ws = Tk()
 pygame.mixer.init()
-testSound = pygame.mixer.Sound('testSound.mp3')
+pygame.mixer.init()
+pygame.mixer.music.load('testSound.mp3')
+
 
 ws.title("Demo")
 
@@ -40,12 +42,13 @@ def onClickConfirm():
     ws.destroy()
     import main
 
+def volume(x):
+     pygame.mixer.music.set_volume(float(volumeSlider.get())/100)
+     print(f'volume set to {volumeSlider.get()}')
 
 def testVolume():
-    volume = volumeSlider.get()
-    testSound.set_volume(volume)
-    print(f'volume set to {volume}')
-    testSound.play()
+    print(f'Volume is at: {pygame.mixer.music.get_volume()}')
+    pygame.mixer.music.play()
     
 titleLabel = Label(ws,text="Cone Detection System Main Menu")
 timeLabel = Label(ws,text="time placeholder")
@@ -54,7 +57,7 @@ startButton = Button(ws,text="Start",command=onClickStartButton)
 
 customConsole = Listbox(ws)
 
-volumeSlider = Scale(ws, from_=100, to=0)
+volumeSlider = Scale(ws, from_=100, to=0, orient=VERTICAL,command=volume)
 
 titleLabel.grid(row=0,column=0)
 timeLabel.grid(row=0,column=1)
