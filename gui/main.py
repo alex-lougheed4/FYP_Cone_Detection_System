@@ -1,5 +1,4 @@
 from tkinter import *
-import imageio
 from PIL import Image, ImageTk
 
 
