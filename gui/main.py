@@ -1,9 +1,17 @@
 from tkinter import *
+from tokenize import Imagnumber
 from PIL import Image, ImageTk
+import datetime, time, subprocess
 
+fps = 30
+Crop_Width = Crop_Height = 600
+input_path = "/Image Capture/"
+outputPath = "/Detected Images/"
+imageNumber = 1
 
 ws = Tk()
-
+ts = time.time()
+st = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
 ws.title("Main Page")
 
 window_width = 1200
@@ -34,14 +42,25 @@ def onClickEndButton():
     confirmButton.grid(row=1,column = 0)
     cancelButton.grid(row=1,column=3)
 
-def onClickStop():
+def onClickStop(): 
     ws.destroy()
     import home
 
+def changeImage():
+    #Take image from output Data folder in order 
+    imageNumber+=1
+    canvas.delete("all")
+    canvas.img = PhotoImage(file=f"/Detected Images/{imageNumber}-detection.png")
+    canvas.create_image(20,20, anchor=NW, image=canvas.img)
+    return
+
+def detectImages():
+    subprocess.Popen(f"cone_detector_image.py {imageNumber}.jpg {outputPath} {Crop_Width}")
+    return
 
     
 titleLabel = Label(ws,text="Main")
-timeLabel = Label(ws,text="time placeholder")
+timeLabel = Label(ws,text=f"Time: {st}")
 
 stopButton = Button(ws,text="Stop",command=onClickEndButton)
 
@@ -50,8 +69,8 @@ customConsole = Listbox(ws)
 
 canvas = Canvas(ws, width = 400, height = 300)      
       
-img = PhotoImage(file="placeholder.png")      
-canvas.create_image(20,20, anchor=NW, image=img) 
+canvas.img = PhotoImage(file="placeholder.png")      
+canvas.create_image(20,20, anchor=NW, image=canvas.img) 
 
 titleLabel.grid(row=0,column=0)
 timeLabel.grid(row=0,column=1)
@@ -60,6 +79,8 @@ canvas.grid(row=1,column=0)
 
 customConsole.grid(row=2,column=0)
 stopButton.grid(row=2,column=1)
+
+ws.after(33,changeImage)
 
 
 
