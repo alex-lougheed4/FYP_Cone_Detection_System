@@ -5,8 +5,8 @@ import datetime, time, subprocess
 
 fps = 30
 Crop_Width = Crop_Height = 600
-input_path = "/Image Capture/"
-outputPath = "/Detected Images/"
+input_path = "Image Capture/"
+outputPath = "Detected Images/"
 imageNumber = 1
 
 ws = Tk()
@@ -55,7 +55,7 @@ def changeImage():
     return
 
 def detectImages():
-    subprocess.Popen(f"cone_detector_image.py {imageNumber}.jpg {outputPath} {Crop_Width}")
+    subprocess.Popen(f"cone_detector_image.py --image '{input_path}{imageNumber}.jpg' --output-dir  '{outputPath}' -c {Crop_Width}")
     return
 
     
