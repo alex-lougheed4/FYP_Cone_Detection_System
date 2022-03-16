@@ -1,7 +1,7 @@
 from tkinter import *
 from PIL import Image, ImageTk
 import datetime, time, subprocess
-import os, os.path, re
+import os, os.path, re, threading
 
 fps = 30
 Crop_Width = Crop_Height = 600
@@ -47,9 +47,10 @@ def onClickStop():
     import home
 
 def changeImage(image):
+    os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Detected_Images')
     #Take image from output Data folder in order 
     canvas.delete("all")
-    canvas.img = PhotoImage(file=f"{outputPath}{image[:-4]}-detection.jpg")
+    canvas.img = ImageTk.PhotoImage(Image.open(f"{image[:-4]}-detection.jpg"))
     canvas.create_image(20,20, anchor=NW, image=canvas.img)
     return
     
@@ -68,29 +69,36 @@ canvas.create_image(20,20, anchor=NW, image=canvas.img)
 
 titleLabel.grid(row=0,column=0)
 timeLabel.grid(row=0,column=1)
-canvas.grid(row=1,column=0)
+canvas.grid(row=1,column=0,columnspan=2)
 
 def detectImage(image):
     os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection')
-    subprocess.Popen(f"/opt/homebrew/Caskroom/miniforge/base/envs/testcv/bin/python cone_detector_image.py --image {input_path}{image} --output-dir {outputPath} -c 600".split(" ")) #images not being outputted??
+    subprocess.run(f"/opt/homebrew/Caskroom/miniforge/base/envs/testcv/bin/python cone_detector_image.py --image {input_path}{image} --output-dir {outputPath} -c 600".split(" ")) #images not being outputted??
     #can't use run or window won't open
 
-imageList = os.listdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
-if('.DS_Store' in imageList):
-    imageList.remove('.DS_Store')
-imageList.sort(key=lambda f: int(re.sub('\D', '', f)))
 
 os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
 
 #subprocess.run('pip list', shell=True)
-for i in imageList:
-    detectImage(i) #detected image should be in Detected Images NOT WORKING FOR SOME REASON
-    print(f"{i} detected.")
-    print(f"dierectory: {os.getcwd()}")
-    os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
-    os.remove(i) #original image should be in deleted from Image Capture REMOVING BEFORE DETECTION SCRIPT FINISHES.
-    print(f"{i} removed.")
-    changeImage(i)
+
+
+def detection():
+    imageList = os.listdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
+    if('.DS_Store' in imageList):
+        imageList.remove('.DS_Store')
+    imageList.sort(key=lambda f: int(re.sub('\D', '', f)))
+
+    for i in imageList:
+        detectImage(i) #detected image should be in Detected Images NOT WORKING FOR SOME REASONs
+        print(f"{i} detected.")
+        print(f"dierectory: {os.getcwd()}")
+        os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
+        os.remove(i) #original image should be in deleted from Image Capture REMOVING BEFORE DETECTION SCRIPT FINISHES.
+        print(f"{i} removed.")
+        changeImage(i)
+
+threading.Thread(target=detection).start()
+
 
 
 
