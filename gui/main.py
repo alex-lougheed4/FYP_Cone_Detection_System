@@ -25,6 +25,15 @@ center_y = int(screen_height/2 - window_height/2)
 
 ws.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
+def clock():
+    hour = time.strftime("%H")
+    minute = time.strftime("%M")
+    second = time.strftime("%S")
+
+    timeLabel.config(text=hour + ':' + minute + ':' + second)
+    timeLabel.after(1000,clock)
+
+
 
 def onClickEndButton():
     newWindow = Toplevel(ws)
@@ -55,7 +64,8 @@ def changeImage(image):
     return
     
 titleLabel = Label(ws,text="Main")
-timeLabel = Label(ws,text=f"Time: {st}")
+timeLabel = Label(ws,text=f"")
+clock()
 
 stopButton = Button(ws,text="Stop",command=onClickEndButton)
 
