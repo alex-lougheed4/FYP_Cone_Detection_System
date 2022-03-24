@@ -14,6 +14,19 @@ from utils import cv_utils
 from utils import operations as ops
 from utils import tf_utils
 
+DISABLE_GPU = True
+
+if DISABLE_GPU:
+    try:
+        # Disable all GPUS
+        tf.config.set_visible_devices([], 'GPU')
+        visible_devices = tf.config.get_visible_devices()
+        for device in visible_devices:
+            assert device.device_type != 'GPU'
+    except:
+        # Invalid device or cannot modify virtual devices once initialized.
+        pass
+
 logging.config.fileConfig('logging.ini')
 
 FROZEN_GRAPH_PATH = 'models/ssd_mobilenet_v1/frozen_inference_graph.pb'
