@@ -2,6 +2,8 @@ from tkinter import *
 import pygame
 
 
+
+
 ws = Tk()
 pygame.mixer.init()
 pygame.mixer.music.load('testSound.mp3')
@@ -48,6 +50,9 @@ def volume(x):
 def testVolume():
     print(f'Volume is at: {pygame.mixer.music.get_volume()}')
     pygame.mixer.music.play()
+
+def getVolume():
+    return float(volumeSlider.get())/100
     
 titleLabel = Label(ws,text="Cone Detection System Main Menu")
 timeLabel = Label(ws,text="time placeholder")

@@ -4,6 +4,8 @@ import datetime, time, subprocess
 import os, os.path, re, threading, sys
 import pygame
 
+import home
+
 from pydub import AudioSegment
 from pydub.playback import play
 
@@ -26,6 +28,9 @@ hotAreaPreCollisionSound = AudioSegment.from_mp3("HotArea_PreCollision.mp3")
 
 
 ws = Tk()
+pygame.mixer.init()
+pygame.mixer.music.set_volume(home.getVolume())
+
 ts = time.time()
 st = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
 ws.title("Main Page")
@@ -84,17 +89,31 @@ def changeImage(image):
     canvas.create_image(20,20, anchor=NW, image=canvas.img)
     return
 
-def playConeHitSound():
-    play(collisionSound)
+def playConeHitSound(angle):
+    #pan audio by angle
+    pygame.mixer.music.load('CollisionSound.mp3') #changed to panned version
+    pygame.mixer.music.play()
+    pygame.mixer.music.unload()
+
 
 def playEnterHotArea():
-    play(enteredHotAreaSound)
+    pygame.mixer.music.load('Entered_HotArea.mp3')
+    pygame.mixer.music.play()
+    pygame.mixer.music.unload()
+    #play(enteredHotAreaSound)
     
-def playHotAreaCollision():
-    play(hotAreaColisionSound)
+def playHotAreaCollision(angle):
+    #pan audio by angle
+    pygame.mixer.music.load('HotArea_Collision.mp3') #changed to panned version
+    pygame.mixer.music.play()
+    pygame.mixer.music.unload()
 
-def playHotAreaPreCollision():
-    play(hotAreaPreCollisionSound)
+
+def playHotAreaPreCollision(angle):
+    #pan audio by angle
+    pygame.mixer.music.load('HotArea_PreCollision.mp3') #changed to panned version
+    pygame.mixer.music.play()
+    pygame.mixer.music.unload() 
 
 def checkGPSLocation():
     currentPos = (longitude,latitude)
