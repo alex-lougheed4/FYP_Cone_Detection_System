@@ -12,7 +12,7 @@ mydb = mysql.connector.connect(
 def uploadCollision(col):
   mycursor = mydb.cursor()
 
-  sql = "INSERT INTO Collisions (GPSLocation, TimeStamp) VALUES (%s, %s)"
+  sql = "INSERT INTO Collisions (GPSLocation, TimeStamp) VALUES (%s, %s)" #gps = tuple of longitude and latitude 
   val = [col.gps, col.timeStamp]
 
   mycursor.execute(sql, val)
@@ -31,3 +31,4 @@ def searchForGPS(gpsData):
   mycursor.execute(sql)
 
   myresult = mycursor.fetchall()
+  return myresult

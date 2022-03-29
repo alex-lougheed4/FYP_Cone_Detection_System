@@ -4,7 +4,6 @@ import pygame
 
 ws = Tk()
 pygame.mixer.init()
-pygame.mixer.init()
 pygame.mixer.music.load('testSound.mp3')
 
 
