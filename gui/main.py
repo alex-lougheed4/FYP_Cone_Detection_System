@@ -4,6 +4,9 @@ import datetime, time, subprocess
 import os, os.path, re, threading, sys
 import pygame
 
+from pydub import AudioSegment
+from pydub.playback import play
+
 sys.path.insert(0, '/Database/')
 from Database import DataBaseController as dbController
 
@@ -13,7 +16,14 @@ fps = 30
 Crop_Width = Crop_Height = 600
 input_path = f"Image_Capture/"
 outputPath = f"Detected_Images/"
-#detectorScript = os.path.join(os.path.dirname(__file__), '../ConeDetection/cone_detector_image.py')
+
+collisionSound = AudioSegment.from_mp3("CollisionSound.mp3")
+enteredHotAreaSound = AudioSegment.from_mp3("Entered_HotArea.mp3")
+hotAreaColisionSound = AudioSegment.from_mp3("HotArea_Collision.mp3")
+hotAreaPreCollisionSound = AudioSegment.from_mp3("HotArea_PreCollision.mp3")
+
+
+
 
 ws = Tk()
 ts = time.time()
@@ -75,20 +85,16 @@ def changeImage(image):
     return
 
 def playConeHitSound():
-    pygame.mixer.music.load('CollisionSound.mp3')
-    pygame.mixer.music.play()
+    play(collisionSound)
 
 def playEnterHotArea():
-    pygame.mixer.music.load('Entered_HotArea.mp3')
-    pygame.mixer.music.play()
+    play(enteredHotAreaSound)
     
 def playHotAreaCollision():
-    pygame.mixer.music.load('HotArea_Collision.mp3')
-    pygame.mixer.music.play()
+    play(hotAreaColisionSound)
 
 def playHotAreaPreCollision():
-    pygame.mixer.music.load('HotArea_PreCollision.mp3')
-    pygame.mixer.music.play()
+    play(hotAreaPreCollisionSound)
 
 def checkGPSLocation():
     currentPos = (longitude,latitude)
@@ -157,8 +163,6 @@ threading.Thread(target=detection).start()
 
 customConsole.grid(row=2,column=0)
 stopButton.grid(row=2,column=1)
-
-#ws.after(33,changeImage)
 
 
 
