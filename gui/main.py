@@ -20,7 +20,6 @@ input_path = f"Image_Capture/"
 outputPath = f"Detected_Images/"
 
 collisionSound = AudioSegment.from_mp3("CollisionSound.mp3")
-enteredHotAreaSound = AudioSegment.from_mp3("Entered_HotArea.mp3")
 hotAreaColisionSound = AudioSegment.from_mp3("HotArea_Collision.mp3")
 hotAreaPreCollisionSound = AudioSegment.from_mp3("HotArea_PreCollision.mp3")
 
@@ -91,7 +90,8 @@ def changeImage(image):
 
 def playConeHitSound(angle):
     #pan audio by angle
-    pygame.mixer.music.load('CollisionSound.mp3') #changed to panned version
+    pannedColision = collisionSound.pan(panValue(angle))
+    pygame.mixer.music.load(pannedColision) #changed to panned version
     pygame.mixer.music.play()
     pygame.mixer.music.unload()
 
@@ -100,10 +100,11 @@ def playEnterHotArea():
     pygame.mixer.music.load('Entered_HotArea.mp3')
     pygame.mixer.music.play()
     pygame.mixer.music.unload()
-    #play(enteredHotAreaSound)
     
 def playHotAreaCollision(angle):
     #pan audio by angle
+    pannedHotColision = hotAreaColisionSound.pan(panValue(angle))
+    pygame.mixer.music.load(pannedHotColision) #changed to panned version
     pygame.mixer.music.load('HotArea_Collision.mp3') #changed to panned version
     pygame.mixer.music.play()
     pygame.mixer.music.unload()
@@ -111,6 +112,8 @@ def playHotAreaCollision(angle):
 
 def playHotAreaPreCollision(angle):
     #pan audio by angle
+    pannedHotPreColision = hotAreaPreCollisionSound.pan(panValue(angle))
+    pygame.mixer.music.load(pannedHotPreColision) #changed to panned version
     pygame.mixer.music.load('HotArea_PreCollision.mp3') #changed to panned version
     pygame.mixer.music.play()
     pygame.mixer.music.unload() 
@@ -118,14 +121,24 @@ def playHotAreaPreCollision(angle):
 def checkGPSLocation():
     currentPos = (longitude,latitude)
     if(dbController.searchForGPS(currentPos)):
+        inHotArea = TRUE
         playEnterHotArea()
 
-def collisionOccurred():
+def panValue(angle): #for 125 degree frontal field of view range -62.5 to 62.5 
+    if(angle > 0):
+        return angle/62.5
+    elif (angle < 0):
+        return (angle/62.5)*-1
+    else: 
+        return angle
+
+
+def collisionOccurred(angle):
     Collision.makeCollision(longitude,latitude,timeStamp)
     if(inHotArea):
-        playHotAreaCollision()
+        playHotAreaCollision(angle) #pass in angle
     else:
-        playConeHitSound()
+        playConeHitSound(angle) #pass in angle
 
 def setLongitude(val):
     longitude = val
