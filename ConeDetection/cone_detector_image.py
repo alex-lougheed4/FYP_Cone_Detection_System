@@ -105,7 +105,7 @@ def main():
 
         for box, score in zip(boxes, boxes_scores):
             if score > SCORE_THRESHOLD:
-                ymin, xmin, ymax, xmax = box
+                ymin, xmin, ymax, xmax = box #box coords here
                 color_detected_rgb = cv_utils.predominant_rgb_color(
                     img, ymin, xmin, ymax, xmax)
                 text = '{:.2f}'.format(score)
@@ -121,6 +121,7 @@ def main():
         input_image_filename = os.path.splitext(os.path.basename(image_path))[0]
         output_filename = '{}-detection.jpg'.format(input_image_filename)
         cv2.imwrite(os.path.join(output_dir, output_filename), img)
+        return boxes
 
 
 if __name__ == '__main__':

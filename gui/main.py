@@ -23,6 +23,10 @@ collisionSound = AudioSegment.from_mp3("CollisionSound.mp3")
 hotAreaColisionSound = AudioSegment.from_mp3("HotArea_Collision.mp3")
 hotAreaPreCollisionSound = AudioSegment.from_mp3("HotArea_PreCollision.mp3")
 
+speed = 0
+currentImage= ""
+
+boxList = []
 
 
 
@@ -44,7 +48,7 @@ center_x = int(screen_width/2 - window_width/2)
 center_y = int(screen_height/2 - window_height/2)
 
 timeStamp = ""
-inHotArea = FALSE
+coneAhead, inHotArea = FALSE
 
 longitude,latitude = 0
 
@@ -84,6 +88,7 @@ def changeImage(image):
     os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Detected_Images')
     #Take image from output Data folder in order 
     canvas.delete("all")
+    currentImage = f"{image[:-4]}-detection.jpg"
     canvas.img = ImageTk.PhotoImage(Image.open(f"{image[:-4]}-detection.jpg"))
     canvas.create_image(20,20, anchor=NW, image=canvas.img)
     return
@@ -110,7 +115,7 @@ def playHotAreaCollision(angle):
     pygame.mixer.music.unload()
 
 
-def playHotAreaPreCollision(angle):
+def playHotAreaPreCollision(speed): #called when a cone in image is in central 10 (example) degrees and 2 seconds away
     #pan audio by angle
     pannedHotPreColision = hotAreaPreCollisionSound.pan(panValue(angle))
     pygame.mixer.music.load(pannedHotPreColision) #changed to panned version
@@ -166,10 +171,13 @@ canvas.grid(row=1,column=0,columnspan=2)
 
 def detectImage(image):
     os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection')
-    subprocess.run(f"/opt/homebrew/Caskroom/miniforge/base/envs/testcv/bin/python cone_detector_image.py --image {input_path}{image} --output-dir {outputPath} -c 600".split(" "))
-
-
+    boxes = subprocess.run(f"/opt/homebrew/Caskroom/miniforge/base/envs/testcv/bin/python cone_detector_image.py --image {input_path}{image} --output-dir {outputPath} -c 600".split(" "))
+    return boxes
 os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
+
+def distanceOfCone(box):
+    #check size of box compared to size of known distance box 
+    return
 
 
 
@@ -180,13 +188,21 @@ def detection():
     imageList.sort(key=lambda f: int(re.sub('\D', '', f)))
 
     for i in imageList:
-        detectImage(i) 
+        boxList = detectImage(i) 
         print(f"{i} detected.")
         print(f"dierectory: {os.getcwd()}")
         os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
         os.remove(i) 
         print(f"{i} removed.")
         changeImage(i)
+        #check if any in boxes is in the central "strip" of image check space to left and right of x coordinates
+        for box in boxList:
+            #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
+            if(box.minX >=2*(i.width/5)) and (box.maxX <= 3*(i.width/5)):
+                coneAhead = TRUE
+            
+
+        
 
 threading.Thread(target=detection).start()
 
