@@ -59,7 +59,7 @@ def clock():
     minute = time.strftime("%M")
     second = time.strftime("%S")
 
-    timeStamp = (f"{hour,minute,second}")
+    timeStamp = (f"{hour + ':' + minute + ':' + second}")
 
     timeLabel.config(text=hour + ':' + minute + ':' + second)
     timeLabel.after(1000,clock)
@@ -94,6 +94,7 @@ def changeImage(image):
     return
 
 def playConeHitSound(angle):
+    customConsole.insert(END, f"{timeStamp}: Collision Sound Played")
     #pan audio by angle
     pannedColision = collisionSound.pan(panValue(angle))
     pygame.mixer.music.load(pannedColision) #changed to panned version
@@ -102,11 +103,13 @@ def playConeHitSound(angle):
 
 
 def playEnterHotArea():
+    customConsole.insert(END, f"{timeStamp}: Hot Area Sound Played")
     pygame.mixer.music.load('Entered_HotArea.mp3')
     pygame.mixer.music.play()
     pygame.mixer.music.unload()
     
 def playHotAreaCollision(angle):
+    customConsole.insert(END, f"{timeStamp}: Hot Area Collision Sound Played")
     #pan audio by angle
     pannedHotColision = hotAreaColisionSound.pan(panValue(angle))
     pygame.mixer.music.load(pannedHotColision) #changed to panned version
@@ -115,7 +118,8 @@ def playHotAreaCollision(angle):
     pygame.mixer.music.unload()
 
 
-def playHotAreaPreCollision(speed): #called when a cone in image is in central 10 (example) degrees and 2 seconds away
+def playHotAreaPreCollision(speed,angle): #called when a cone in image is in central 10 (example) degrees and 2 seconds away
+    customConsole.insert(END, f"{timeStamp}: Hot Area Pre-Collision Sound Played")
     #pan audio by angle
     pannedHotPreColision = hotAreaPreCollisionSound.pan(panValue(angle))
     pygame.mixer.music.load(pannedHotPreColision) #changed to panned version
@@ -126,6 +130,7 @@ def playHotAreaPreCollision(speed): #called when a cone in image is in central 1
 def checkGPSLocation():
     currentPos = (longitude,latitude)
     if(dbController.searchForGPS(currentPos)):
+        customConsole.insert(END, f"{timeStamp}: Entered Hot Area at {currentPos}")
         inHotArea = TRUE
         playEnterHotArea()
 
@@ -139,6 +144,7 @@ def panValue(angle): #for 125 degree frontal field of view range -62.5 to 62.5
 
 
 def collisionOccurred(angle):
+    customConsole.insert(END, f"{timeStamp}: Collision detected")
     Collision.makeCollision(longitude,latitude,timeStamp)
     if(inHotArea):
         playHotAreaCollision(angle) #pass in angle
@@ -157,7 +163,7 @@ clock()
 
 stopButton = Button(ws,text="Stop",command=onClickEndButton)
 
-customConsole = Listbox(ws)
+customConsole = Listbox(ws,bg= "black", fg="white",)
 
 
 canvas = Canvas(ws, width = 400, height = 300)      
@@ -190,11 +196,13 @@ def detection():
     for i in imageList:
         boxList = detectImage(i) 
         print(f"{i} detected.")
+        customConsole.insert(END, f"{timeStamp}: image {i} detected")
         print(f"dierectory: {os.getcwd()}")
         os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
         os.remove(i) 
         print(f"{i} removed.")
         changeImage(i)
+        customConsole.insert(END, f"{timeStamp}: image {i} showing")
         #check if any in boxes is in the central "strip" of image check space to left and right of x coordinates
         for box in boxList:
             #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
