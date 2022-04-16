@@ -208,6 +208,7 @@ def detection():
             #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
             if(box.minX >=2*(i.width/5)) and (box.maxX <= 3*(i.width/5)):
                 coneAhead = TRUE
+                #play relevant sound for pre collision
             
 
         
