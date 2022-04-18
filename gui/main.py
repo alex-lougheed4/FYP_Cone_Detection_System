@@ -118,7 +118,7 @@ def playHotAreaCollision(angle):
     pygame.mixer.music.unload()
 
 
-def playHotAreaPreCollision(speed,angle): #called when a cone in image is in central 10 (example) degrees and 2 seconds away
+def playHotAreaPreCollision(): #called when a cone in image is in central 10 (example) degrees and 2 seconds away
     customConsole.insert(END, f"{timeStamp}: Hot Area Pre-Collision Sound Played")
     #pan audio by angle
     pannedHotPreColision = hotAreaPreCollisionSound.pan(panValue(angle))
@@ -181,9 +181,12 @@ def detectImage(image):
     return boxes
 os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
 
-def distanceOfCone(box):
+def distanceOfCone(box): #return distance of cone in m
+    pixelWidth = box.xmax - box.ymax 
+    focalLength = 5118.11 #Focal Length ALL UNITS IN M 
+    trueWidth = 0.127
     #check size of box compared to size of known distance box 
-    return
+    return (trueWidth * focalLength) / pixelWidth
 
 
 
@@ -208,6 +211,11 @@ def detection():
             #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
             if(box.minX >=2*(i.width/5)) and (box.maxX <= 3*(i.width/5)):
                 coneAhead = TRUE
+                if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError):
+                    if(inHotArea):
+                        playHotAreaPreCollision()
+                    #else:
+                        #playAreaPreCollision()
                 #play relevant sound for pre collision
             
 
