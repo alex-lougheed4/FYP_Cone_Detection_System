@@ -121,7 +121,7 @@ def playHotAreaCollision(angle):
 def playHotAreaPreCollision(): #called when a cone in image is in central 10 (example) degrees and 2 seconds away
     customConsole.insert(END, f"{timeStamp}: Hot Area Pre-Collision Sound Played")
     #pan audio by angle
-    pannedHotPreColision = hotAreaPreCollisionSound.pan(panValue(angle))
+    pannedHotPreColision = hotAreaPreCollisionSound#.pan(panValue(angle))
     pygame.mixer.music.load(pannedHotPreColision) #changed to panned version
     pygame.mixer.music.load('HotArea_PreCollision.mp3') #changed to panned version
     pygame.mixer.music.play()
