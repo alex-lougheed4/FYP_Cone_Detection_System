@@ -16,6 +16,7 @@ import Collision
 
 fps = 30
 Crop_Width = Crop_Height = 600
+marginOfError = 0.5 #Preliminary Value
 input_path = f"Image_Capture/"
 outputPath = f"Detected_Images/"
 
