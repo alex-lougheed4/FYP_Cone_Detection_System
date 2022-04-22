@@ -211,9 +211,9 @@ def detection():
             #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
             if(box.minX >=2*(i.width/5)) and (box.maxX <= 3*(i.width/5)):
                 coneAhead = TRUE
-                if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError):
-                    if(inHotArea):
-                        playHotAreaPreCollision()
+                if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError): # if Time away from the cone at current speed is 2s +/- a margin of error
+                    if(inHotArea): #if the vehicle is in a hotArea
+                        playHotAreaPreCollision() 
                     #else:
                         #playAreaPreCollision()
                 #play relevant sound for pre collision
