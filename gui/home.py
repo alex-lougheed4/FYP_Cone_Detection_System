@@ -45,6 +45,8 @@ def onClickConfirm():
 
 def volume(x):
      pygame.mixer.music.set_volume(float(volumeSlider.get())/100)
+     volume = volumeSlider.get()/100
+     main.setVolume(volume)
      print(f'volume set to {volumeSlider.get()}')
 
 def testVolume():
@@ -52,7 +54,7 @@ def testVolume():
     pygame.mixer.music.play()
 
 def getVolume():
-    return float(volumeSlider.get())/100
+    return volume
     
 titleLabel = Label(ws,text="Cone Detection System Main Menu")
 timeLabel = Label(ws,text="time placeholder")
@@ -62,6 +64,7 @@ startButton = Button(ws,text="Start",command=onClickStartButton)
 customConsole = Listbox(ws)
 
 volumeSlider = Scale(ws, from_=100, to=0, orient=VERTICAL,command=volume)
+volumeSlider.set(50)#Sets the default value of the volume slider
 
 titleLabel.grid(row=0,column=0)
 timeLabel.grid(row=0,column=1)

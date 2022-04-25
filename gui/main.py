@@ -10,9 +10,8 @@ from pydub import AudioSegment
 from pydub.playback import play
 
 sys.path.insert(0, '/Database/')
-from Database import DataBaseController as dbController
-
-import Collision
+#from Database import DatabaseController as dbController
+from pytests import collisionTester as test
 
 fps = 30
 Crop_Width = Crop_Height = 600
@@ -20,20 +19,24 @@ marginOfError = 0.5 #Preliminary Value
 input_path = f"Image_Capture/"
 outputPath = f"Detected_Images/"
 
-collisionSound = AudioSegment.from_mp3("CollisionSound.mp3")
-hotAreaColisionSound = AudioSegment.from_mp3("HotArea_Collision.mp3")
-hotAreaPreCollisionSound = AudioSegment.from_mp3("HotArea_PreCollision.mp3")
+os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/')
+
+collisionSound = AudioSegment.from_mp3("gui/CollisionSound.mp3")
+hotAreaColisionSound = AudioSegment.from_mp3("gui/HotArea_Collision.mp3")
+hotAreaPreCollisionSound = AudioSegment.from_mp3("gui/HotArea_PreCollision.mp3")
 
 speed = 0
 currentImage= ""
 
 boxList = []
-
-
+volume = .5
+def setVolume(val):
+    volume = val
 
 ws = Tk()
 pygame.mixer.init()
-pygame.mixer.music.set_volume(home.getVolume())
+print(f"volume is: {volume}")
+pygame.mixer.music.set_volume(volume)
 
 ts = time.time()
 st = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
@@ -49,9 +52,11 @@ center_x = int(screen_width/2 - window_width/2)
 center_y = int(screen_height/2 - window_height/2)
 
 timeStamp = ""
-coneAhead, inHotArea = FALSE
+coneAhead= False
+inHotArea = False
 
-longitude,latitude = 0
+longitude=0
+latitude = 0
 
 ws.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
@@ -89,9 +94,15 @@ def changeImage(image):
     os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Detected_Images')
     #Take image from output Data folder in order 
     canvas.delete("all")
-    currentImage = f"{image[:-4]}-detection.jpg"
-    canvas.img = ImageTk.PhotoImage(Image.open(f"{image[:-4]}-detection.jpg"))
-    canvas.create_image(20,20, anchor=NW, image=canvas.img)
+    temp = f"{image[:-4]}-detection.jpg"
+    currentImage = Image.open(temp)
+    currentImage = currentImage.resize((600,400))
+    canvas.img = ImageTk.PhotoImage(currentImage)
+    canvas.create_image(10,10, anchor=NW, image=canvas.img)
+    return
+
+def addDebugToConsole(text):
+    customConsole.insert(END, f"Test Line: {text}")
     return
 
 def playConeHitSound(angle):
@@ -132,7 +143,7 @@ def checkGPSLocation():
     currentPos = (longitude,latitude)
     if(dbController.searchForGPS(currentPos)):
         customConsole.insert(END, f"{timeStamp}: Entered Hot Area at {currentPos}")
-        inHotArea = TRUE
+        inHotArea = True
         playEnterHotArea()
 
 def panValue(angle): #for 125 degree frontal field of view range -62.5 to 62.5 
@@ -145,8 +156,10 @@ def panValue(angle): #for 125 degree frontal field of view range -62.5 to 62.5
 
 
 def collisionOccurred(angle):
+    import Collision
+    print(dir(Collision))
     customConsole.insert(END, f"{timeStamp}: Collision detected")
-    Collision.makeCollision(longitude,latitude,timeStamp)
+    Collision(longitude,latitude,timeStamp)
     if(inHotArea):
         playHotAreaCollision(angle) #pass in angle
     else:
@@ -158,6 +171,9 @@ def setLongitude(val):
 def setLatitude(val):
     latitude = val    
 
+def setHotAreaBool(val):
+    inHotArea = val
+
 titleLabel = Label(ws,text="Main")
 timeLabel = Label(ws,text=f"")
 clock()
@@ -167,18 +183,18 @@ stopButton = Button(ws,text="Stop",command=onClickEndButton)
 customConsole = Listbox(ws,bg= "black", fg="white",)
 
 
-canvas = Canvas(ws, width = 400, height = 300)      
+canvas = Canvas(ws, width = 600, height = 400)      
       
 canvas.img = PhotoImage(file="gui/placeholder.png")      
-canvas.create_image(20,20, anchor=NW, image=canvas.img) 
+canvas.create_image(10,10, anchor=NW, image=canvas.img) 
 
-titleLabel.grid(row=0,column=0)
+titleLabel.grid(row=0,column=5)
 timeLabel.grid(row=0,column=1)
-canvas.grid(row=1,column=0,columnspan=2)
+canvas.grid(row=4,column=0,columnspan=8,padx=100)
 
 def detectImage(image):
     os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection')
-    boxes = subprocess.run(f"/opt/homebrew/Caskroom/miniforge/base/envs/testcv/bin/python cone_detector_image.py --image {input_path}{image} --output-dir {outputPath} -c 600".split(" "))
+    boxes = subprocess.call(f"/opt/homebrew/Caskroom/miniforge/base/envs/testcv/bin/python cone_detector_image.py --image {input_path}{image} --output-dir {outputPath} -c 600".split(" "))
     return boxes
 os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
 
@@ -199,9 +215,10 @@ def detection():
 
     for i in imageList:
         boxList = detectImage(i) 
+        print(f"alpha box list: {boxList}")
         print(f"{i} detected.")
-        customConsole.insert(END, f"{timeStamp}: image {i} detected")
-        print(f"dierectory: {os.getcwd()}")
+        customConsole.insert(END, f"{timeStamp}: image {i} detected") #main thread is not in main loop error?
+        print(f"directory: {os.getcwd()}")
         os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
         os.remove(i) 
         print(f"{i} removed.")
@@ -211,19 +228,21 @@ def detection():
         for box in boxList:
             #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
             if(box.minX >=2*(i.width/5)) and (box.maxX <= 3*(i.width/5)):
-                coneAhead = TRUE
+                coneAhead = True
                 if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError): # if Time away from the cone at current speed is 2s +/- a margin of error
                     if(inHotArea): #if the vehicle is in a hotArea
                         playHotAreaPreCollision() 
                     #else:
                         #playAreaPreCollision()
                 #play relevant sound for pre collision
+                coneAhead = False
             
 
         
 
 threading.Thread(target=detection).start()
-
+#threading.Thread(target=test.run()).start()
+#checkGPSLocation()
 
 
 

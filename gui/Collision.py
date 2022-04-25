@@ -1,6 +1,6 @@
 import sys
-sys.path.insert(0, '/Database/')
-from Database import DataBaseController as dbController
+#sys.path.insert(0, '/Database/')
+#from Database import DataBaseController as dbController
 
 class Collision:
     gps = (0,0)
@@ -10,7 +10,7 @@ class Collision:
         self.gps = (longitude,latitude)
         self.timeStamp = timeStamp
 
-    def makeCollision(longitude,latitude,timeStamp):
+    def Collision(longitude,latitude,timeStamp):
         collision = Collision((longitude,latitude),timeStamp)
-        dbController.uploadCollision(collision)
+        #dbController.uploadCollision(collision)
         return collision

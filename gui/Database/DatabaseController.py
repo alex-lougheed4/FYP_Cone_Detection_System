@@ -22,6 +22,7 @@ def uploadCollision(col):
 def searchForGPS(gpsData):
 
   #gpsdata + radius calculation
+  gpsData += 1
   collisionDetectionRange = gpsData 
 
   mycursor = mydb.cursor()
