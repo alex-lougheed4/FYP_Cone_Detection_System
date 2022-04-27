@@ -102,42 +102,57 @@ def changeImage(image):
     return
 
 def addDebugToConsole(text):
-    customConsole.insert(END, f"Test Line: {text}")
+    customConsole.insert(END, f"Test Line: {text}") 
     return
 
-def playConeHitSound(angle):
+#def playConeHitSound(angle):
+def playConeHitSound():
+    os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/gui')
+    print(f"directory: {os.getcwd()}")
     customConsole.insert(END, f"{timeStamp}: Collision Sound Played")
     #pan audio by angle
-    pannedColision = collisionSound.pan(panValue(angle))
-    pygame.mixer.music.load(pannedColision) #changed to panned version
-    pygame.mixer.music.play()
-    pygame.mixer.music.unload()
+    #pannedColision = collisionSound.pan(panValue(angle))
+    #pygame.mixer.music.load(collisionSound) #changed to panned version
+    collisionSound = pygame.mixer.Sound("CollisionSound.mp3")
+    collisionSound.play()
+    #pygame.mixer.music.load('CollisionSound.mp3')
+    #pygame.mixer.music.play()
+    #pygame.mixer.music.unload()
 
 
 def playEnterHotArea():
+    os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/gui')
     customConsole.insert(END, f"{timeStamp}: Hot Area Sound Played")
-    pygame.mixer.music.load('Entered_HotArea.mp3')
-    pygame.mixer.music.play()
-    pygame.mixer.music.unload()
+    enterHotAreaSound = pygame.mixer.Sound("Entered_HotArea.mp3")
+    enterHotAreaSound.play()
+    #pygame.mixer.music.load('Entered_HotArea.mp3')
+    #pygame.mixer.music.play()
+    #pygame.mixer.music.unload()
     
-def playHotAreaCollision(angle):
+#def playHotAreaCollision(angle):
+def playHotAreaCollision():
     customConsole.insert(END, f"{timeStamp}: Hot Area Collision Sound Played")
     #pan audio by angle
-    pannedHotColision = hotAreaColisionSound.pan(panValue(angle))
-    pygame.mixer.music.load(pannedHotColision) #changed to panned version
-    pygame.mixer.music.load('HotArea_Collision.mp3') #changed to panned version
-    pygame.mixer.music.play()
-    pygame.mixer.music.unload()
+    #pannedHotColision = hotAreaColisionSound.pan(panValue(angle))
+    #pygame.mixer.music.load(pannedHotColision) #changed to panned version
+    #pygame.mixer.music.load('HotArea_Collision.mp3') #changed to panned version
+    #pygame.mixer.music.play()
+    #pygame.mixer.music.unload()
+    hotAreaCollisionSound = pygame.mixer.Sound("HotArea_Collision.mp3")
+    hotAreaCollisionSound.play()
 
 
 def playHotAreaPreCollision(): #called when a cone in image is in central 10 (example) degrees and 2 seconds away
+    os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/gui')
     customConsole.insert(END, f"{timeStamp}: Hot Area Pre-Collision Sound Played")
     #pan audio by angle
-    pannedHotPreColision = hotAreaPreCollisionSound#.pan(panValue(angle))
-    pygame.mixer.music.load(pannedHotPreColision) #changed to panned version
-    pygame.mixer.music.load('HotArea_PreCollision.mp3') #changed to panned version
-    pygame.mixer.music.play()
-    pygame.mixer.music.unload() 
+    #pannedHotPreColision = hotAreaPreCollisionSound#.pan(panValue(angle))
+    #pygame.mixer.music.load(pannedHotPreColision) #changed to panned version
+    #pygame.mixer.music.load('HotArea_PreCollision.mp3') #changed to panned version
+    #pygame.mixer.music.play()
+    #pygame.mixer.music.unload() 
+    hotAreaPreCollisionSound = pygame.mixer.Sound("HotArea_PreCollision.mp3")
+    hotAreaPreCollisionSound.play()
 
 def checkGPSLocation():
     currentPos = (longitude,latitude)
@@ -156,10 +171,10 @@ def panValue(angle): #for 125 degree frontal field of view range -62.5 to 62.5
 
 
 def collisionOccurred(angle):
-    import Collision
-    print(dir(Collision))
+    #import Collision
+    #print(dir(Collision))
     customConsole.insert(END, f"{timeStamp}: Collision detected")
-    Collision(longitude,latitude,timeStamp)
+    #Collision(longitude,latitude,timeStamp)
     if(inHotArea):
         playHotAreaCollision(angle) #pass in angle
     else:
@@ -180,7 +195,8 @@ clock()
 
 stopButton = Button(ws,text="Stop",command=onClickEndButton)
 
-customConsole = Listbox(ws,bg= "black", fg="white",)
+customConsole = Listbox(ws,bg= "black", fg="white",width=40)
+
 
 
 canvas = Canvas(ws, width = 600, height = 400)      
@@ -188,13 +204,26 @@ canvas = Canvas(ws, width = 600, height = 400)
 canvas.img = PhotoImage(file="gui/placeholder.png")      
 canvas.create_image(10,10, anchor=NW, image=canvas.img) 
 
-titleLabel.grid(row=0,column=5)
+titleLabel.grid(row=0,column=0)
 timeLabel.grid(row=0,column=1)
-canvas.grid(row=4,column=0,columnspan=8,padx=100)
+canvas.grid(row=4,column=0,columnspan=8,padx=10)
+
+collisionTestButton = Button(ws,text="Test Collision",command=playConeHitSound)
+collisionTestButton.grid(row=5,column=8)
+
+hotAreaCollisionTestButton = Button(ws,text="Test HotArea Col",command=playHotAreaCollision)
+hotAreaCollisionTestButton.grid(row=6,column=8)
+
+
+hotAreaPreCollisionTestButton = Button(ws,text="Test HA PreCol",command=playHotAreaPreCollision)
+hotAreaPreCollisionTestButton.grid(row=7,column=8)
+
+hotAreaTestButton = Button(ws,text="Test HA",command=playEnterHotArea)
+hotAreaTestButton.grid(row=8,column=8)
 
 def detectImage(image):
     os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection')
-    boxes = subprocess.call(f"/opt/homebrew/Caskroom/miniforge/base/envs/testcv/bin/python cone_detector_image.py --image {input_path}{image} --output-dir {outputPath} -c 600".split(" "))
+    boxes = subprocess.check_output(f"/opt/homebrew/Caskroom/miniforge/base/envs/testcv/bin/python cone_detector_image.py --image {input_path}{image} --output-dir {outputPath} -c 600".split(" "))
     return boxes
 os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
 
@@ -205,8 +234,6 @@ def distanceOfCone(box): #return distance of cone in m
     #check size of box compared to size of known distance box 
     return (trueWidth * focalLength) / pixelWidth
 
-
-
 def detection():
     imageList = os.listdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
     if('.DS_Store' in imageList):
@@ -215,29 +242,27 @@ def detection():
 
     for i in imageList:
         boxList = detectImage(i) 
-        print(f"alpha box list: {boxList}")
+        print(f"box list: {boxList}")
         print(f"{i} detected.")
-        customConsole.insert(END, f"{timeStamp}: image {i} detected") #main thread is not in main loop error?
+        customConsole.insert(END, f"{timeStamp}image {i} detected") #main thread is not in main loop error?
         print(f"directory: {os.getcwd()}")
         os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
         os.remove(i) 
         print(f"{i} removed.")
         changeImage(i)
-        customConsole.insert(END, f"{timeStamp}: image {i} showing")
+        customConsole.insert(END, f"{timeStamp}image {i} showing")
         #check if any in boxes is in the central "strip" of image check space to left and right of x coordinates
-        for box in boxList:
+        #for box in boxList:
             #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
-            if(box.minX >=2*(i.width/5)) and (box.maxX <= 3*(i.width/5)):
-                coneAhead = True
-                if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError): # if Time away from the cone at current speed is 2s +/- a margin of error
-                    if(inHotArea): #if the vehicle is in a hotArea
-                        playHotAreaPreCollision() 
+            #if(box.minX >=2*(i.width/5)) and (box.maxX <= 3*(i.width/5)):
+                #coneAhead = True
+                #if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError): # if Time away from the cone at current speed is 2s +/- a margin of error
+                    #if(inHotArea): #if the vehicle is in a hotArea
+                        #playHotAreaPreCollision() 
                     #else:
                         #playAreaPreCollision()
                 #play relevant sound for pre collision
-                coneAhead = False
-            
-
+                #coneAhead = False
         
 
 threading.Thread(target=detection).start()

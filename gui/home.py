@@ -46,11 +46,12 @@ def onClickConfirm():
 def volume(x):
      pygame.mixer.music.set_volume(float(volumeSlider.get())/100)
      volume = volumeSlider.get()/100
-     main.setVolume(volume)
+     #main.setVolume(volume)
      print(f'volume set to {volumeSlider.get()}')
 
 def testVolume():
     print(f'Volume is at: {pygame.mixer.music.get_volume()}')
+    customConsole.insert(END, f"Test Button Clicked") 
     pygame.mixer.music.play()
 
 def getVolume():
