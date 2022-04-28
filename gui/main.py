@@ -29,7 +29,7 @@ speed = 2
 currentImage= ""
 
 boxList = []
-volume = .35
+volume = .2
 def setVolume(val):
     volume = val
 
@@ -268,9 +268,11 @@ def detection():
             #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
             if(int(box[1]) >=2*(w/5)) and (int(box[3]) <= 3*(w/5)):
                 coneAhead = True
-                if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError): # if Time away from the cone at current speed is 2s +/- a margin of error
-                    if(inHotArea): #if the vehicle is in a hotArea
-                        playHotAreaPreCollision() 
+                customConsole.insert(END, f"Cone Ahead")
+                playHotAreaPreCollision()
+                #if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError): # if Time away from the cone at current speed is 2s +/- a margin of error
+                if(inHotArea): #if the vehicle is in a hotArea
+                    playHotAreaPreCollision() 
                     #else:
                         #playAreaPreCollision()
                 #play relevant sound for pre collision
