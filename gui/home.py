@@ -9,7 +9,7 @@ pygame.mixer.init()
 pygame.mixer.music.load('testSound.mp3')
 
 
-ws.title("Demo")
+ws.title("Start Menu")
 
 window_width = 1200
 window_height = 800
@@ -52,6 +52,7 @@ def volume(x):
 def testVolume():
     print(f'Volume is at: {pygame.mixer.music.get_volume()}')
     customConsole.insert(END, f"Test Button Clicked") 
+    customConsole.insert(END,f"Volume at {round(pygame.mixer.music.get_volume(),2)}")
     pygame.mixer.music.play()
 
 def getVolume():

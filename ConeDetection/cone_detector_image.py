@@ -121,7 +121,7 @@ def main():
         input_image_filename = os.path.splitext(os.path.basename(image_path))[0]
         output_filename = '{}-detection.jpg'.format(input_image_filename)
         cv2.imwrite(os.path.join(output_dir, output_filename), img)
-        print(f"boxes array: {boxes}")
+        print(boxes)
         return boxes
 
 

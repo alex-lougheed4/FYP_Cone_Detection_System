@@ -2,7 +2,7 @@ from tkinter import *
 from PIL import Image, ImageTk
 import datetime, time, subprocess
 import os, os.path, re, threading, sys
-import pygame
+import pygame,cv2
 
 import home
 
@@ -25,11 +25,11 @@ collisionSound = AudioSegment.from_mp3("gui/CollisionSound.mp3")
 hotAreaColisionSound = AudioSegment.from_mp3("gui/HotArea_Collision.mp3")
 hotAreaPreCollisionSound = AudioSegment.from_mp3("gui/HotArea_PreCollision.mp3")
 
-speed = 0
+speed = 2
 currentImage= ""
 
 boxList = []
-volume = .5
+volume = .35
 def setVolume(val):
     volume = val
 
@@ -228,7 +228,7 @@ def detectImage(image):
 os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
 
 def distanceOfCone(box): #return distance of cone in m
-    pixelWidth = box.xmax - box.ymax 
+    pixelWidth = int(box[3]) - int(box[2])
     focalLength = 5118.11 #Focal Length ALL UNITS IN M 
     trueWidth = 0.127
     #check size of box compared to size of known distance box 
@@ -241,28 +241,40 @@ def detection():
     imageList.sort(key=lambda f: int(re.sub('\D', '', f)))
 
     for i in imageList:
-        boxList = detectImage(i) 
+        boxList = detectImage(i)
+        keep = []
+        temp = boxList[1:-3]
+        temp = temp.split(b"\n")
+        for item in temp:
+            item = item.strip()[1:-1]
+            items = item.split()
+            keep.append(items)
+        boxList = keep
         print(f"box list: {boxList}")
         print(f"{i} detected.")
         customConsole.insert(END, f"{timeStamp}image {i} detected") #main thread is not in main loop error?
         print(f"directory: {os.getcwd()}")
         os.chdir('/Users/alexlougheed/Git Repos/FYP_Cone_Detection_System/ConeDetection/Image_Capture')
+        print(f"image: {i}")
+        im = cv2.imread(i)
+        h,w,c = im.shape
         os.remove(i) 
         print(f"{i} removed.")
         changeImage(i)
+
         customConsole.insert(END, f"{timeStamp}image {i} showing")
         #check if any in boxes is in the central "strip" of image check space to left and right of x coordinates
-        #for box in boxList:
+        for box in boxList:
             #check space on respective side of minX and maxX based on image size (or pixels since all images should be of the same size)
-            #if(box.minX >=2*(i.width/5)) and (box.maxX <= 3*(i.width/5)):
-                #coneAhead = True
-                #if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError): # if Time away from the cone at current speed is 2s +/- a margin of error
-                    #if(inHotArea): #if the vehicle is in a hotArea
-                        #playHotAreaPreCollision() 
+            if(int(box[1]) >=2*(w/5)) and (int(box[3]) <= 3*(w/5)):
+                coneAhead = True
+                if(distanceOfCone(box) / speed == 2 + marginOfError) or  (distanceOfCone(box) / speed == 2 - marginOfError): # if Time away from the cone at current speed is 2s +/- a margin of error
+                    if(inHotArea): #if the vehicle is in a hotArea
+                        playHotAreaPreCollision() 
                     #else:
                         #playAreaPreCollision()
                 #play relevant sound for pre collision
-                #coneAhead = False
+                coneAhead = False
         
 
 threading.Thread(target=detection).start()
